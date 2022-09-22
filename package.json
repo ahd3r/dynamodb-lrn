@@ -1,0 +1,26 @@
+{
+  "name": "dynamodb-lrn",
+  "version": "1.0.0",
+  "description": "test dynamodb",
+  "main": "index.js",
+  "scripts": {
+    "deploy": "sls deploy --verbose"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ahd3r/dynamodb-lrn.git"
+  },
+  "author": "Ander",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ahd3r/dynamodb-lrn/issues"
+  },
+  "homepage": "https://github.com/ahd3r/dynamodb-lrn#readme",
+  "dependencies": {
+    "aws-sdk": "^2.1217.0",
+    "joi": "^17.6.0",
+    "pino": "^8.6.0",
+    "pino-pretty": "^9.1.0",
+    "uuid": "^9.0.0"
+  }
+}
