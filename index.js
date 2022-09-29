@@ -53,8 +53,8 @@ const getMany = async (event, context) => {
 const getOne = async (event, context) => {
   logger.info({
     awsRequestId: context.awsRequestId,
-    'x-correlation-id': context['x-correlation-id'],
-    'x-correlation-trace-id': context['x-correlation-trace-id'],
+    'x-correlation-id': event['x-correlation-id'],
+    'x-correlation-trace-id': event['x-correlation-trace-id'],
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
