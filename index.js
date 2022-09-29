@@ -62,6 +62,7 @@ const getOne = async (event) => {
   });
   console.log({
     one: 1,
+    two: 2,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
