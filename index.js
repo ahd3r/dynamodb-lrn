@@ -1,7 +1,5 @@
 const { DocumentClient } = require('aws-sdk/clients/dynamodb');
 const { v4: uuid } = require('uuid');
-const Joi = require('joi');
-const { lambdaRequestTracker } = require('pino-lambda');
 
 const { logger } = require('./utils');
 const { createRideContract, updateRideContract } = require('./validation');
@@ -53,18 +51,10 @@ const getMany = async (event, context) => {
   };
 };
 const getOne = async (event, context) => {
-  // lambdaRequestTracker()(event, context);
   logger.info({
-    two: 2,
-    method: event.requestContext.http.method,
-    queryStringParameters: event.queryStringParameters,
-    pathParameters: event.pathParameters,
-    body: event.body && JSON.parse(event.body),
-    headers: event.headers,
-    path: event.requestContext.http.path
-  });
-  console.log({
-    one: 1,
+    awsRequestId: context.awsRequestId,
+    'x-correlation-id': context['x-correlation-id'],
+    'x-correlation-trace-id': context['x-correlation-trace-id'],
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
