@@ -24,10 +24,8 @@ const getMany = async (event, context) => {
     data = await client.scan({ TableName: tableName }).promise();
   } else {
     data = await client
-      .query({
-        TableName: tableName,
-        KeyConditionExpression: 'entity = :entity and id = :id',
-        FilterExpression: 'carMark = :carMark and carYear = :carYear',
+      .scan({
+        FilterExpression: `entity = :entity and id = :id AND carMark = :carMark and carYear = :carYear`,
         ExpressionAttributeValues: {
           ':entity': {
             S: event.queryStringParameters?.entity
@@ -41,9 +39,31 @@ const getMany = async (event, context) => {
           ':carYear': {
             N: event.queryStringParameters?.carYear
           }
-        }
+        },
+        TableName: tableName
       })
       .promise();
+    // data = await client
+    //   .query({
+    //     TableName: tableName,
+    //     KeyConditionExpression: 'entity = :entity and id = :id',
+    //     FilterExpression: 'carMark = :carMark and carYear = :carYear',
+    //     ExpressionAttributeValues: {
+    //       ':entity': {
+    //         S: event.queryStringParameters?.entity
+    //       },
+    //       ':id': {
+    //         S: event.queryStringParameters?.id
+    //       },
+    //       ':carMark': {
+    //         S: event.queryStringParameters?.carMark
+    //       },
+    //       ':carYear': {
+    //         N: event.queryStringParameters?.carYear
+    //       }
+    //     }
+    //   })
+    //   .promise();
   }
 
   return {
@@ -61,14 +81,13 @@ const getOne = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  console.log(await client.get({ TableName: tableName, Key: { entity: 'ride' } }).promise());
   const data = await client
     .query({
       TableName: tableName,
       KeyConditionExpression: '#entity = :entity and #id = :id',
       ExpressionAttributeValues: {
         ':entity': 'ride',
-        ':id': '123'
+        ':id': event.pathParameters?.id
       },
       ExpressionAttributeNames: {
         '#entity': 'entity',
