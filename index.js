@@ -53,19 +53,16 @@ const getMany = async (event, context) => {
   };
 };
 const getOne = async (event, context) => {
-  lambdaRequestTracker()(event, context);
-  logger.info(
-    {
-      two: 2,
-      method: event.requestContext.http.method,
-      queryStringParameters: event.queryStringParameters,
-      pathParameters: event.pathParameters,
-      body: event.body && JSON.parse(event.body),
-      headers: event.headers,
-      path: event.requestContext.http.path
-    },
-    'check'
-  );
+  // lambdaRequestTracker()(event, context);
+  logger.info({
+    two: 2,
+    method: event.requestContext.http.method,
+    queryStringParameters: event.queryStringParameters,
+    pathParameters: event.pathParameters,
+    body: event.body && JSON.parse(event.body),
+    headers: event.headers,
+    path: event.requestContext.http.path
+  });
   console.log({
     one: 1,
     method: event.requestContext.http.method,
