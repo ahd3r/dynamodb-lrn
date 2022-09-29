@@ -10,6 +10,7 @@ const secretToken = 'very-very-secret-token';
 
 const getMany = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -53,8 +54,6 @@ const getMany = async (event, context) => {
 const getOne = async (event, context) => {
   logger.info({
     awsRequestId: context.awsRequestId,
-    'x-correlation-id': event['x-correlation-id'],
-    'x-correlation-trace-id': event['x-correlation-trace-id'],
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -63,11 +62,6 @@ const getOne = async (event, context) => {
     path: event.requestContext.http.path
   });
   console.log(await client.get({ TableName: tableName, Key: { entity: 'ride' } }).promise());
-  console.log(await client.get({ TableName: tableName, Key: { id: '123' } }).promise());
-  console.log(
-    await client.get({ TableName: tableName, Key: { entity: 'ride', id: '123' } }).promise()
-  );
-  console.log(await client.get({ TableName: tableName, Key: { carMark: 'test' } }).promise());
   const data = await client
     .query({
       TableName: tableName,
@@ -91,6 +85,7 @@ const getOne = async (event, context) => {
 
 const createOne = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -133,6 +128,7 @@ const createOne = async (event, context) => {
 };
 const createMany = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -180,6 +176,7 @@ const createMany = async (event, context) => {
 
 const updateOne = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -203,6 +200,7 @@ const updateOne = async (event, context) => {
 };
 const updateMany = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -227,6 +225,7 @@ const updateMany = async (event, context) => {
 
 const deleteOne = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
@@ -250,6 +249,7 @@ const deleteOne = async (event, context) => {
 };
 const deleteMany = async (event, context) => {
   logger.info({
+    awsRequestId: context.awsRequestId,
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
     pathParameters: event.pathParameters,
