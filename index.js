@@ -1,6 +1,7 @@
 const { DocumentClient } = require('aws-sdk/clients/dynamodb');
 const { v4: uuid } = require('uuid');
 const Joi = require('joi');
+const { lambdaRequestTracker } = require('pino-lambda');
 
 const { logger } = require('./utils');
 const { createRideContract, updateRideContract } = require('./validation');
@@ -9,7 +10,7 @@ const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10
 const tableName = 'ride-service4-customerTestTable2';
 const secretToken = 'very-very-secret-token';
 
-const getMany = async (event) => {
+const getMany = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -51,7 +52,8 @@ const getMany = async (event) => {
     body: JSON.stringify({ data })
   };
 };
-const getOne = async (event) => {
+const getOne = async (event, context) => {
+  lambdaRequestTracker()(event, context);
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -97,7 +99,7 @@ const getOne = async (event) => {
   };
 };
 
-const createOne = async (event) => {
+const createOne = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -139,7 +141,7 @@ const createOne = async (event) => {
     };
   }
 };
-const createMany = async (event) => {
+const createMany = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -186,7 +188,7 @@ const createMany = async (event) => {
   }
 };
 
-const updateOne = async (event) => {
+const updateOne = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -209,7 +211,7 @@ const updateOne = async (event) => {
     body: JSON.stringify({ data })
   };
 };
-const updateMany = async (event) => {
+const updateMany = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -233,7 +235,7 @@ const updateMany = async (event) => {
   };
 };
 
-const deleteOne = async (event) => {
+const deleteOne = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
@@ -256,7 +258,7 @@ const deleteOne = async (event) => {
     body: JSON.stringify({ data })
   };
 };
-const deleteMany = async (event) => {
+const deleteMany = async (event, context) => {
   logger.info({
     method: event.requestContext.http.method,
     queryStringParameters: event.queryStringParameters,
