@@ -259,11 +259,11 @@ const updateOne = async (event, context) => {
           .map((key) => `#${key} = :${key}`)
           .join(', ')}`,
         ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
-          (key) => ({ [`#${key}`]: key }),
+          (res, key) => ({ ...res, [`#${key}`]: key }),
           {}
         ),
         ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
-          ([key, val]) => ({ [`:${key}`]: val }),
+          (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
           {}
         )
       })
