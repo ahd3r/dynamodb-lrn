@@ -28,9 +28,7 @@ const getMany = async (event, context) => {
         FilterExpression: `entity = :entity AND carMark = :carMark`,
         ExpressionAttributeValues: {
           ':entity': event.queryStringParameters?.entity,
-          ':id': event.queryStringParameters?.id,
-          ':carMark': event.queryStringParameters?.carMark,
-          ':carYear': event.queryStringParameters?.carYear
+          ':carMark': event.queryStringParameters?.carMark
         },
         TableName: tableName
       })
