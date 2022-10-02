@@ -8,6 +8,7 @@ const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10
 const tableName = 'ride-service4-customerTestTable2';
 const secretToken = 'very-very-secret-token';
 
+// improve
 const getMany = async (event, context) => {
   logger.info({
     awsRequestId: context.awsRequestId,
@@ -244,11 +245,47 @@ const updateOne = async (event, context) => {
     if (event.headers.authorization !== secretToken) {
       throw new ValidationError('Wrong authorization token');
     }
-    const data = { text: 'updateOne' };
+
+    const body = JSON.parse(event.body);
+    const validRideUpdate = await updateRideContract.validateAsync(body, { abortEarly: false });
+    await client
+      .update({
+        TableName: tableName,
+        Key: {
+          id: event.pathParameters?.id,
+          entity: 'ride'
+        },
+        UpdateExpression: `set ${Object.keys(validRideUpdate)
+          .map((key) => `#${key} = :${key}`)
+          .join(', ')}`,
+        ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
+          (key) => ({ [`#${key}`]: key }),
+          {}
+        ),
+        ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
+          ([key, val]) => ({ [`:${key}`]: val }),
+          {}
+        )
+      })
+      .promise();
+    const data = await client
+      .query({
+        TableName: tableName,
+        KeyConditionExpression: '#entity = :entity and #id = :id',
+        ExpressionAttributeValues: {
+          ':entity': 'ride',
+          ':id': event.pathParameters?.id
+        },
+        ExpressionAttributeNames: {
+          '#entity': 'entity',
+          '#id': 'id'
+        }
+      })
+      .promise();
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: data.Items[0] })
     };
   } catch (error) {
     console.error(error);
