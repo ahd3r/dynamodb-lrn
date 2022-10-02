@@ -72,11 +72,15 @@ const getMany = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -113,11 +117,15 @@ const getOne = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -160,11 +168,15 @@ const createOne = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -210,11 +222,15 @@ const createMany = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -246,11 +262,15 @@ const updateOne = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -281,11 +301,15 @@ const updateMany = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -317,11 +341,15 @@ const deleteOne = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
@@ -352,11 +380,15 @@ const deleteMany = async (event, context) => {
   } catch (error) {
     console.error(error);
     if (!error.status) {
-      error = new ServerError(error.message || error);
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
     }
     return {
       statusCode: error.status,
-      error: error.message
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
