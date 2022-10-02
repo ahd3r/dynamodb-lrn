@@ -18,48 +18,63 @@ const getMany = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  let data;
 
-  if (!event.queryStringParameters) {
-    data = await client.scan({ TableName: tableName }).promise();
-  } else {
-    data = await client
-      .scan({
-        FilterExpression: `entity = :entity AND carMark = :carMark`,
-        ExpressionAttributeValues: {
-          ':entity': event.queryStringParameters?.entity,
-          ':carMark': event.queryStringParameters?.carMark
-        },
-        TableName: tableName
-      })
-      .promise();
-    // data = await client
-    //   .query({
-    //     TableName: tableName,
-    //     KeyConditionExpression: 'entity = :entity and id = :id',
-    //     FilterExpression: 'carMark = :carMark and carYear = :carYear',
-    //     ExpressionAttributeValues: {
-    //       ':entity': {
-    //         S: event.queryStringParameters?.entity
-    //       },
-    //       ':id': {
-    //         S: event.queryStringParameters?.id
-    //       },
-    //       ':carMark': {
-    //         S: event.queryStringParameters?.carMark
-    //       },
-    //       ':carYear': {
-    //         N: event.queryStringParameters?.carYear
-    //       }
-    //     }
-    //   })
-    //   .promise();
+  try {
+    let data;
+
+    if (!event.queryStringParameters) {
+      data = await client.scan({ TableName: tableName }).promise();
+    } else {
+      data = await client
+        .scan({
+          FilterExpression: `entity = :entity AND carYear = :carYear AND carMark = :carMark AND id = :id AND passengerAmount = :passengerAmount`,
+          ExpressionAttributeValues: JSON.parse(
+            JSON.stringify({
+              ':entity': 'ride',
+              ':carMark': event.queryStringParameters?.carMark,
+              ':carYear':
+                event.queryStringParameters?.carYear &&
+                Number(event.queryStringParameters?.carYear),
+              ':id': event.queryStringParameters?.carMark,
+              ':passengerAmount': event.queryStringParameters?.carMark
+            })
+          ),
+          TableName: tableName
+        })
+        .promise();
+      // data = await client
+      //   .query({
+      //     TableName: tableName,
+      //     KeyConditionExpression: 'entity = :entity and id = :id',
+      //     FilterExpression: 'carMark = :carMark and carYear = :carYear',
+      //     ExpressionAttributeValues: {
+      //       ':entity': {
+      //         S: event.queryStringParameters?.entity
+      //       },
+      //       ':id': {
+      //         S: event.queryStringParameters?.id
+      //       },
+      //       ':carMark': {
+      //         S: event.queryStringParameters?.carMark
+      //       },
+      //       ':carYear': {
+      //         N: event.queryStringParameters?.carYear
+      //       }
+      //     }
+      //   })
+      //   .promise();
+    }
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    return {
+      statusCode: error.status,
+      error: error.message || error
+    };
   }
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ data })
-  };
 };
 const getOne = async (event, context) => {
   logger.info({
