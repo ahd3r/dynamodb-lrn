@@ -140,14 +140,11 @@ const createOne = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  if (event.headers.authorization !== secretToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Wrong authorization token' })
-    };
-  }
 
   try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
     if (!event.body) {
       throw new ValidationError('You had to specify body');
     }
@@ -190,14 +187,11 @@ const createMany = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  if (event.headers.authorization !== secretToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Wrong authorization token' })
-    };
-  }
 
   try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
     if (!event.body) {
       throw new ValidationError('You had to specify body');
     }
@@ -245,14 +239,11 @@ const updateOne = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  if (event.headers.authorization !== secretToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Wrong authorization token' })
-    };
-  }
 
   try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
     const data = { text: 'updateOne' };
 
     return {
@@ -284,14 +275,11 @@ const updateMany = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  if (event.headers.authorization !== secretToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Wrong authorization token' })
-    };
-  }
 
   try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
     const data = { text: 'updateMany' };
 
     return {
@@ -324,14 +312,11 @@ const deleteOne = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  if (event.headers.authorization !== secretToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Wrong authorization token' })
-    };
-  }
 
   try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
     const data = { text: 'deleteOne' };
 
     return {
@@ -363,14 +348,11 @@ const deleteMany = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  if (event.headers.authorization !== secretToken) {
-    return {
-      statusCode: 400,
-      body: JSON.stringify({ error: 'Wrong authorization token' })
-    };
-  }
 
   try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
     const data = { text: 'deleteMany' };
 
     return {
