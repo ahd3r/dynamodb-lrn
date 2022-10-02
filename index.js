@@ -25,20 +25,9 @@ const getMany = async (event, context) => {
   } else {
     data = await client
       .scan({
-        FilterExpression: `entity = :entity and id = :id AND carMark = :carMark and carYear = :carYear`,
+        FilterExpression: `entity = :entity`,
         ExpressionAttributeValues: {
-          ':entity': {
-            S: event.queryStringParameters?.entity
-          },
-          ':id': {
-            S: event.queryStringParameters?.id
-          },
-          ':carMark': {
-            S: event.queryStringParameters?.carMark
-          },
-          ':carYear': {
-            N: event.queryStringParameters?.carYear
-          }
+          ':entity': event.queryStringParameters?.entity
         },
         TableName: tableName
       })
