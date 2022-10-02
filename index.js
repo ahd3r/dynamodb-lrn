@@ -80,7 +80,12 @@ const getMany = async (event, context) => {
     }
     return {
       statusCode: error.status,
-      body: { error: error.message, type: error.type, errors: error.errors, one: undefined }
+      body: JSON.stringify({
+        error: error.message,
+        type: error.type,
+        errors: error.errors,
+        one: undefined
+      })
     };
   }
 };
