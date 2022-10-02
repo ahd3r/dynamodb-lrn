@@ -70,8 +70,9 @@ const getMany = async (event, context) => {
       body: JSON.stringify({ data })
     };
   } catch (error) {
+    console.error(error);
     return {
-      statusCode: error.status,
+      statusCode: error.status || 500,
       error: error.message || error
     };
   }
@@ -86,25 +87,33 @@ const getOne = async (event, context) => {
     headers: event.headers,
     path: event.requestContext.http.path
   });
-  const data = await client
-    .query({
-      TableName: tableName,
-      KeyConditionExpression: '#entity = :entity and #id = :id',
-      ExpressionAttributeValues: {
-        ':entity': 'ride',
-        ':id': event.pathParameters?.id
-      },
-      ExpressionAttributeNames: {
-        '#entity': 'entity',
-        '#id': 'id'
-      }
-    })
-    .promise();
+  try {
+    const data = await client
+      .query({
+        TableName: tableName,
+        KeyConditionExpression: '#entity = :entity and #id = :id',
+        ExpressionAttributeValues: {
+          ':entity': 'ride',
+          ':id': event.pathParameters?.id
+        },
+        ExpressionAttributeNames: {
+          '#entity': 'entity',
+          '#id': 'id'
+        }
+      })
+      .promise();
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ data: data.Items[0] })
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data: data.Items[0] })
+    };
+  } catch (error) {
+    console.error(error);
+    return {
+      statusCode: error.status || 500,
+      error: error.message || error
+    };
+  }
 };
 
 const createOne = async (event, context) => {
@@ -142,11 +151,11 @@ const createOne = async (event, context) => {
       statusCode: 201,
       body: JSON.stringify({ data: ride })
     };
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: err.message ? err.message : err })
+      statusCode: error.status || 500,
+      error: error.message || error
     };
   }
 };
@@ -189,11 +198,11 @@ const createMany = async (event, context) => {
       statusCode: 201,
       body: JSON.stringify({ data: res })
     };
-  } catch (err) {
-    console.error(err);
+  } catch (error) {
+    console.error(error);
     return {
-      statusCode: 400,
-      body: JSON.stringify({ error: err.message ? err.message : err })
+      statusCode: error.status || 500,
+      error: error.message || error
     };
   }
 };
