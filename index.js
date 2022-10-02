@@ -149,7 +149,7 @@ const createOne = async (event, context) => {
       throw new ValidationError('You had to specify body');
     }
     const body = JSON.parse(event.body);
-    const ride = await createRideContract.validateAsync(body);
+    const ride = await createRideContract.validateAsync(body, { abortEarly: false });
     ride.id = uuid();
     ride.entity = 'ride';
     await client
@@ -198,7 +198,7 @@ const createMany = async (event, context) => {
     const body = JSON.parse(event.body);
     let res = [];
     for (const ride of body) {
-      const validRide = await createRideContract.validateAsync(ride);
+      const validRide = await createRideContract.validateAsync(ride, { abortEarly: false });
       validRide.id = uuid();
       validRide.entity = 'ride';
       await client
