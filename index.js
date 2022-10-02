@@ -25,20 +25,24 @@ const getMany = async (event, context) => {
     if (!event.queryStringParameters) {
       data = await client.scan({ TableName: tableName }).promise();
     } else {
+      const attrVal = JSON.parse(
+        JSON.stringify({
+          ':entity': 'ride',
+          ':carMark': event.queryStringParameters?.carMark,
+          ':carYear':
+            event.queryStringParameters?.carYear && Number(event.queryStringParameters?.carYear),
+          ':id': event.queryStringParameters?.id,
+          ':passengerAmount':
+            event.queryStringParameters?.passengerAmount &&
+            Number(event.queryStringParameters?.passengerAmount)
+        })
+      );
       data = await client
         .scan({
-          FilterExpression: `entity = :entity AND carYear = :carYear AND carMark = :carMark AND id = :id AND passengerAmount = :passengerAmount`,
-          ExpressionAttributeValues: JSON.parse(
-            JSON.stringify({
-              ':entity': 'ride',
-              ':carMark': event.queryStringParameters?.carMark,
-              ':carYear':
-                event.queryStringParameters?.carYear &&
-                Number(event.queryStringParameters?.carYear),
-              ':id': event.queryStringParameters?.carMark,
-              ':passengerAmount': event.queryStringParameters?.carMark
-            })
-          ),
+          FilterExpression: Object.keys(attrVal)
+            .map((val) => `${val.slice(1)} = ${val}`)
+            .join(' AND '),
+          ExpressionAttributeValues: attrVal,
           TableName: tableName
         })
         .promise();
@@ -80,12 +84,7 @@ const getMany = async (event, context) => {
     }
     return {
       statusCode: error.status,
-      body: JSON.stringify({
-        error: error.message,
-        type: error.type,
-        errors: error.errors,
-        one: undefined
-      })
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
 };
