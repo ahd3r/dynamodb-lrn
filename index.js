@@ -1,7 +1,7 @@
 const { DocumentClient } = require('aws-sdk/clients/dynamodb');
 const { v4: uuid } = require('uuid');
 
-const { logger } = require('./utils');
+const { logger, ValidationError, ServerError } = require('./utils');
 const { createRideContract, updateRideContract } = require('./validation');
 
 const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10' });
@@ -71,9 +71,12 @@ const getMany = async (event, context) => {
     };
   } catch (error) {
     console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
     return {
-      statusCode: error.status || 500,
-      error: error.message || error
+      statusCode: error.status,
+      error: error.message
     };
   }
 };
@@ -109,9 +112,12 @@ const getOne = async (event, context) => {
     };
   } catch (error) {
     console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
     return {
-      statusCode: error.status || 500,
-      error: error.message || error
+      statusCode: error.status,
+      error: error.message
     };
   }
 };
@@ -135,7 +141,7 @@ const createOne = async (event, context) => {
 
   try {
     if (!event.body) {
-      throw 'You had to specify body';
+      throw new ValidationError('You had to specify body');
     }
     const body = JSON.parse(event.body);
     const ride = await createRideContract.validateAsync(body);
@@ -153,9 +159,12 @@ const createOne = async (event, context) => {
     };
   } catch (error) {
     console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
     return {
-      statusCode: error.status || 500,
-      error: error.message || error
+      statusCode: error.status,
+      error: error.message
     };
   }
 };
@@ -178,7 +187,7 @@ const createMany = async (event, context) => {
 
   try {
     if (!event.body) {
-      throw 'You had to specify body';
+      throw new ValidationError('You had to specify body');
     }
     const body = JSON.parse(event.body);
     let res = [];
@@ -200,9 +209,12 @@ const createMany = async (event, context) => {
     };
   } catch (error) {
     console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
     return {
-      statusCode: error.status || 500,
-      error: error.message || error
+      statusCode: error.status,
+      error: error.message
     };
   }
 };
@@ -224,12 +236,23 @@ const updateOne = async (event, context) => {
     };
   }
 
-  const data = { text: 'updateOne' };
+  try {
+    const data = { text: 'updateOne' };
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ data })
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
+    return {
+      statusCode: error.status,
+      error: error.message
+    };
+  }
 };
 const updateMany = async (event, context) => {
   logger.info({
@@ -248,12 +271,23 @@ const updateMany = async (event, context) => {
     };
   }
 
-  const data = { text: 'updateMany' };
+  try {
+    const data = { text: 'updateMany' };
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ data })
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
+    return {
+      statusCode: error.status,
+      error: error.message
+    };
+  }
 };
 
 const deleteOne = async (event, context) => {
@@ -273,12 +307,23 @@ const deleteOne = async (event, context) => {
     };
   }
 
-  const data = { text: 'deleteOne' };
+  try {
+    const data = { text: 'deleteOne' };
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ data })
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
+    return {
+      statusCode: error.status,
+      error: error.message
+    };
+  }
 };
 const deleteMany = async (event, context) => {
   logger.info({
@@ -297,12 +342,23 @@ const deleteMany = async (event, context) => {
     };
   }
 
-  const data = { text: 'deleteMany' };
+  try {
+    const data = { text: 'deleteMany' };
 
-  return {
-    statusCode: 200,
-    body: JSON.stringify({ data })
-  };
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      error = new ServerError(error.message || error);
+    }
+    return {
+      statusCode: error.status,
+      error: error.message
+    };
+  }
 };
 
 module.exports = {
