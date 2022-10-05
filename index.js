@@ -302,111 +302,6 @@ const updateOne = async (event, context) => {
     };
   }
 };
-const updateMany = async (event, context) => {
-  logger.info({
-    awsRequestId: context.awsRequestId,
-    method: event.requestContext.http.method,
-    queryStringParameters: event.queryStringParameters,
-    pathParameters: event.pathParameters,
-    body: event.body && JSON.parse(event.body),
-    headers: event.headers,
-    path: event.requestContext.http.path
-  });
-
-  try {
-    if (event.headers.authorization !== secretToken) {
-      throw new ValidationError('Wrong authorization token');
-    }
-    const body = JSON.parse(event.body);
-    const validRideUpdate = await updateRideContract.validateAsync(body, { abortEarly: false });
-    let data;
-
-    if (!event.queryStringParameters) {
-      await client
-        .update({
-          TableName: tableName,
-          Key: { entity: 'ride' },
-          UpdateExpression: `set ${Object.keys(validRideUpdate)
-            .map((key) => `#${key} = :${key}`)
-            .join(', ')}`,
-          ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
-            (res, key) => ({ ...res, [`#${key}`]: key }),
-            {}
-          ),
-          ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
-            (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
-            {}
-          )
-        })
-        .promise();
-      data = await client
-        .scan({
-          TableName: tableName
-        })
-        .promise();
-    } else {
-      const attrVal = JSON.parse(
-        JSON.stringify({
-          ':entity': 'ride',
-          ':carMark': event.queryStringParameters?.carMark,
-          ':carYear':
-            event.queryStringParameters?.carYear && Number(event.queryStringParameters?.carYear),
-          ':id': event.queryStringParameters?.id,
-          ':passengerAmount':
-            event.queryStringParameters?.passengerAmount &&
-            Number(event.queryStringParameters?.passengerAmount)
-        })
-      );
-      await client
-        .update({
-          TableName: tableName,
-          Key: Object.entries(attrVal).reduce(
-            (res, [key, val]) => ({ ...res, [key.slice(1)]: val }),
-            {}
-          ),
-          UpdateExpression: `set ${Object.keys(validRideUpdate)
-            .map((key) => `#${key} = :${key}`)
-            .join(', ')}`,
-          ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
-            (res, key) => ({ ...res, [`#${key}`]: key }),
-            {}
-          ),
-          ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
-            (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
-            {}
-          )
-        })
-        .promise();
-      data = await client
-        .scan({
-          FilterExpression: Object.keys(attrVal)
-            .map((val) => `${val.slice(1)} = ${val}`)
-            .join(' AND '),
-          ExpressionAttributeValues: attrVal,
-          TableName: tableName
-        })
-        .promise();
-    }
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ data: data.Item })
-    };
-  } catch (error) {
-    console.error(error);
-    if (!error.status) {
-      if (error.details) {
-        error = new ValidationError(error.details);
-      } else {
-        error = new ServerError(error.message || error);
-      }
-    }
-    return {
-      statusCode: error.status,
-      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
-    };
-  }
-};
 
 const deleteOne = async (event, context) => {
   logger.info({
@@ -444,42 +339,6 @@ const deleteOne = async (event, context) => {
     };
   }
 };
-const deleteMany = async (event, context) => {
-  logger.info({
-    awsRequestId: context.awsRequestId,
-    method: event.requestContext.http.method,
-    queryStringParameters: event.queryStringParameters,
-    pathParameters: event.pathParameters,
-    body: event.body && JSON.parse(event.body),
-    headers: event.headers,
-    path: event.requestContext.http.path
-  });
-
-  try {
-    if (event.headers.authorization !== secretToken) {
-      throw new ValidationError('Wrong authorization token');
-    }
-    const data = { text: 'deleteMany' };
-
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ data })
-    };
-  } catch (error) {
-    console.error(error);
-    if (!error.status) {
-      if (error.details) {
-        error = new ValidationError(error.details);
-      } else {
-        error = new ServerError(error.message || error);
-      }
-    }
-    return {
-      statusCode: error.status,
-      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
-    };
-  }
-};
 
 module.exports = {
   getOne,
@@ -487,7 +346,5 @@ module.exports = {
   createOne,
   createMany,
   updateOne,
-  updateMany,
-  deleteOne,
-  deleteMany
+  deleteOne
 };

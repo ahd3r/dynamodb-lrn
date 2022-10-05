@@ -55,26 +55,12 @@ functions:
       - httpApi:
           path: /{id}
           method: patch
-  updateManyRides:
-    handler: index.updateMany
-    role: lambdaRole2
-    events:
-      - httpApi:
-          path: /
-          method: patch
   deleteOneRide:
     handler: index.deleteOne
     role: lambdaRole2
     events:
       - httpApi:
           path: /{id}
-          method: delete
-  deleteManyRides:
-    handler: index.deleteMany
-    role: lambdaRole2
-    events:
-      - httpApi:
-          path: /
           method: delete
 
 resources:
