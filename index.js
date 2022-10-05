@@ -317,11 +317,80 @@ const updateMany = async (event, context) => {
     if (event.headers.authorization !== secretToken) {
       throw new ValidationError('Wrong authorization token');
     }
-    const data = { text: 'updateMany' };
+    const body = JSON.parse(event.body);
+    const validRideUpdate = await updateRideContract.validateAsync(body, { abortEarly: false });
+    let data;
+
+    if (!event.queryStringParameters) {
+      await client
+        .update({
+          TableName: tableName,
+          Key: { entity: 'ride' },
+          UpdateExpression: `set ${Object.keys(validRideUpdate)
+            .map((key) => `#${key} = :${key}`)
+            .join(', ')}`,
+          ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
+            (res, key) => ({ ...res, [`#${key}`]: key }),
+            {}
+          ),
+          ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
+            (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
+            {}
+          )
+        })
+        .promise();
+      data = await client
+        .scan({
+          TableName: tableName
+        })
+        .promise();
+    } else {
+      const attrVal = JSON.parse(
+        JSON.stringify({
+          ':entity': 'ride',
+          ':carMark': event.queryStringParameters?.carMark,
+          ':carYear':
+            event.queryStringParameters?.carYear && Number(event.queryStringParameters?.carYear),
+          ':id': event.queryStringParameters?.id,
+          ':passengerAmount':
+            event.queryStringParameters?.passengerAmount &&
+            Number(event.queryStringParameters?.passengerAmount)
+        })
+      );
+      await client
+        .update({
+          TableName: tableName,
+          Key: Object.entries(attrVal).reduce(
+            (res, [key, val]) => ({ ...res, [key.slice(1)]: val }),
+            {}
+          ),
+          UpdateExpression: `set ${Object.keys(validRideUpdate)
+            .map((key) => `#${key} = :${key}`)
+            .join(', ')}`,
+          ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
+            (res, key) => ({ ...res, [`#${key}`]: key }),
+            {}
+          ),
+          ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
+            (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
+            {}
+          )
+        })
+        .promise();
+      data = await client
+        .scan({
+          FilterExpression: Object.keys(attrVal)
+            .map((val) => `${val.slice(1)} = ${val}`)
+            .join(' AND '),
+          ExpressionAttributeValues: attrVal,
+          TableName: tableName
+        })
+        .promise();
+    }
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
     console.error(error);
