@@ -8,6 +8,23 @@ const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10
 const tableName = 'ride-service4-customerTestTable2';
 const secretToken = 'very-very-secret-token';
 
+/**
+ * scan - done
+ * query - done
+ * get - done
+ * batchGet - no need
+ * batchWrite
+ *  create
+ *  update
+ *  delete
+ * update
+ * put
+ *  create
+ *  update
+ *  add
+ * delete
+ */
+
 // TODO improve
 const getMany = async (event, context) => {
   logger.info({
@@ -75,20 +92,27 @@ const getOne = async (event, context) => {
     path: event.requestContext.http.path
   });
   try {
-    const data = await client
-      .query({
-        TableName: tableName,
-        KeyConditionExpression: '#entity = :entity and #id = :id',
-        ExpressionAttributeValues: {
-          ':entity': 'ride',
-          ':id': event.pathParameters?.id
-        },
-        ExpressionAttributeNames: {
-          '#entity': 'entity',
-          '#id': 'id'
-        }
-      })
-      .promise();
+    // const data = await client
+    //   .query({
+    //     TableName: tableName,
+    //     KeyConditionExpression: '#entity = :entity and #id = :id',
+    //     ExpressionAttributeValues: {
+    //       ':entity': 'ride',
+    //       ':id': event.pathParameters?.id
+    //     },
+    //     ExpressionAttributeNames: {
+    //       '#entity': 'entity',
+    //       '#id': 'id'
+    //     }
+    //   })
+    //   .promise();
+    const data = await client.get({
+      TableName: tableName,
+      Key: {
+        id: event.pathParameters?.id,
+        entity: 'ride'
+      }
+    });
 
     return {
       statusCode: 200,
@@ -181,14 +205,15 @@ const createMany = async (event, context) => {
       const validRide = await createRideContract.validateAsync(ride, { abortEarly: false });
       validRide.id = uuid();
       validRide.entity = 'ride';
-      await client
-        .put({
-          TableName: tableName,
-          Item: validRide
-        })
-        .promise();
       res.push(validRide);
     }
+    await client
+      .batchWrite({
+        RequestItems: {
+          [tableName]: res.map((validRide) => ({ PutRequest: { Item: validRide } }))
+        }
+      })
+      .promise();
     return {
       statusCode: 201,
       body: JSON.stringify({ data: res })
@@ -277,6 +302,48 @@ const updateOne = async (event, context) => {
   }
 };
 
+const updateMany = async (event, context) => {
+  logger.info({
+    awsRequestId: context.awsRequestId,
+    method: event.requestContext.http.method,
+    queryStringParameters: event.queryStringParameters,
+    pathParameters: event.pathParameters,
+    body: event.body && JSON.parse(event.body),
+    headers: event.headers,
+    path: event.requestContext.http.path
+  });
+
+  try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
+
+    const body = JSON.parse(event.body);
+    await client.put({
+      TableName: tableName,
+      Item: body
+    });
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
+    }
+    return {
+      statusCode: error.status,
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
+    };
+  }
+};
+
 const deleteOne = async (event, context) => {
   logger.info({
     awsRequestId: context.awsRequestId,
@@ -331,13 +398,12 @@ const deleteOne = async (event, context) => {
   }
 };
 
-// TODO try to add to pk and sk new ride, to make it as nested for one pk and sk
-
 module.exports = {
   getOne,
   getMany,
   createOne,
   createMany,
   updateOne,
+  updateMany,
   deleteOne
 };
