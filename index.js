@@ -319,10 +319,12 @@ const updateMany = async (event, context) => {
     }
 
     const body = JSON.parse(event.body);
-    await client.put({
-      TableName: tableName,
-      Item: body
-    });
+    await client
+      .put({
+        TableName: tableName,
+        Item: body
+      })
+      .promise();
 
     return {
       statusCode: 200,
