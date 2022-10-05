@@ -318,7 +318,29 @@ const deleteOne = async (event, context) => {
     if (event.headers.authorization !== secretToken) {
       throw new ValidationError('Wrong authorization token');
     }
-    const data = { text: 'deleteOne' };
+    const data = await client
+      .query({
+        TableName: tableName,
+        KeyConditionExpression: '#entity = :entity and #id = :id',
+        ExpressionAttributeValues: {
+          ':entity': 'ride',
+          ':id': event.pathParameters?.id
+        },
+        ExpressionAttributeNames: {
+          '#entity': 'entity',
+          '#id': 'id'
+        }
+      })
+      .promise();
+    await client
+      .delete({
+        TableName: tableName,
+        Key: {
+          id: event.pathParameters?.id,
+          entity: 'ride'
+        }
+      })
+      .promise();
 
     return {
       statusCode: 200,
