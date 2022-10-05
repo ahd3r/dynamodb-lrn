@@ -8,7 +8,7 @@ const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10
 const tableName = 'ride-service4-customerTestTable2';
 const secretToken = 'very-very-secret-token';
 
-// improve
+// TODO improve
 const getMany = async (event, context) => {
   logger.info({
     awsRequestId: context.awsRequestId,
@@ -44,27 +44,6 @@ const getMany = async (event, context) => {
         TableName: tableName
       })
       .promise();
-    // data = await client
-    //   .query({
-    //     TableName: tableName,
-    //     KeyConditionExpression: 'entity = :entity and id = :id',
-    //     FilterExpression: 'carMark = :carMark and carYear = :carYear',
-    //     ExpressionAttributeValues: {
-    //       ':entity': {
-    //         S: event.queryStringParameters?.entity
-    //       },
-    //       ':id': {
-    //         S: event.queryStringParameters?.id
-    //       },
-    //       ':carMark': {
-    //         S: event.queryStringParameters?.carMark
-    //       },
-    //       ':carYear': {
-    //         N: event.queryStringParameters?.carYear
-    //       }
-    //     }
-    //   })
-    //   .promise();
 
     return {
       statusCode: 200,
@@ -269,16 +248,11 @@ const updateOne = async (event, context) => {
       })
       .promise();
     const data = await client
-      .query({
+      .get({
         TableName: tableName,
-        KeyConditionExpression: '#entity = :entity and #id = :id',
-        ExpressionAttributeValues: {
-          ':entity': 'ride',
-          ':id': event.pathParameters?.id
-        },
-        ExpressionAttributeNames: {
-          '#entity': 'entity',
-          '#id': 'id'
+        Key: {
+          entity: 'ride',
+          id: event.pathParameters?.id
         }
       })
       .promise();
@@ -319,16 +293,11 @@ const deleteOne = async (event, context) => {
       throw new ValidationError('Wrong authorization token');
     }
     const data = await client
-      .query({
+      .get({
         TableName: tableName,
-        KeyConditionExpression: '#entity = :entity and #id = :id',
-        ExpressionAttributeValues: {
-          ':entity': 'ride',
-          ':id': event.pathParameters?.id
-        },
-        ExpressionAttributeNames: {
-          '#entity': 'entity',
-          '#id': 'id'
+        Key: {
+          entity: 'ride',
+          id: event.pathParameters?.id
         }
       })
       .promise();
@@ -361,6 +330,8 @@ const deleteOne = async (event, context) => {
     };
   }
 };
+
+// TODO try to add to pk and sk new ride, to make it as nested for one pk and sk
 
 module.exports = {
   getOne,
