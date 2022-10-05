@@ -319,14 +319,14 @@ const updateMany = async (event, context) => {
     }
 
     const body = JSON.parse(event.body);
-    const data = await client.put({
+    await client.put({
       TableName: tableName,
       Item: body
     });
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: body })
     };
   } catch (error) {
     console.error(error);
