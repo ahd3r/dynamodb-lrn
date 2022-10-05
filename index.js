@@ -319,7 +319,7 @@ const updateMany = async (event, context) => {
     }
 
     const body = JSON.parse(event.body);
-    await client.put({
+    const data = await client.put({
       TableName: tableName,
       Item: body
     });
