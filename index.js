@@ -219,7 +219,8 @@ const createOne = async (event, context) => {
     }
     const body = JSON.parse(event.body);
     const ride = await createRideContract.validateAsync(body, { abortEarly: false });
-    ride.created = Date.now();
+    const hrTime = process.hrtime();
+    ride.created = hrTime[0] * 1000000000 + hrTime[1];
     ride.entity = 'ride';
     await client
       .put({
@@ -267,8 +268,9 @@ const createMany = async (event, context) => {
     const body = JSON.parse(event.body);
     let res = [];
     for (const ride of body) {
+      const hrTime = process.hrtime();
       const validRide = await createRideContract.validateAsync(ride, { abortEarly: false });
-      validRide.created = Date.now();
+      validRide.created = hrTime[0] * 1000000000 + hrTime[1];
       validRide.entity = 'ride';
       res.push(validRide);
     }
