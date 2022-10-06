@@ -8,6 +8,38 @@ const tableName = 'ride-service5-customerTestTable3';
 const secretToken = 'very-very-secret-token';
 
 /**
+ * query
+ * - this method has access to dynamodb functionality to work with indexes, like partition key and sort key, that's why it requires two type of filtering: by the index attribute and ordinary attribute.
+ * - this method accept next fields:
+ * - - KeyConditionExpression - filters by the index attribute
+ * - - ExpressionAttributeValues - object with key-value pair, which will replace a piece of expression in KeyConditionExpression and FilterExpression, which is responsible for value filter (key name starts with colon (:))
+ * - - FilterExpression (optional) - almost the same as KeyConditionExpression, but for non index attribute
+ * - - ExpressionAttributeNames (optional) - object with key-value pair, which will replace a piece of expression in KeyConditionExpression and FilterExpression, which is responsible for name of attribute (key name starts with grid (#))
+ * - - ProjectionExpression (optional) - you may define a set of attributes you want to get from query execution
+ * - example of params:
+ * - - {
+        TableName: "tblUsers",
+        ExpressionAttributeNames: {
+          "#password": "password",
+          "#email": "email"
+        },
+        ExpressionAttributeValues: {
+          ":emailValue": "email",
+          ":passwordValue": "password",
+        },
+        FilterExpression: "#password = :passwordValue",
+        KeyConditionExpression: "#email = :emailValue",
+        ProjectionExpression: "password, email"
+      }
+ * - additional info:
+ * - - https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/dynamodb-example-query-scan.html
+ * - - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html
+ * scan
+ * - it goes through every record in table and check the condition, 'query' method is similar a little bit, but more optimized
+ */
+
+// TODO
+/**
  * scan - done
  * query - done
  * get - done
@@ -22,6 +54,24 @@ const secretToken = 'very-very-secret-token';
  *  update - done
  *  add - ?
  * delete - done
+ */
+/**
+ * indexes
+ *  global secondary index
+ *  local secondary index
+ * analytics
+ *  group
+ *  count
+ *  sum
+ *  avg
+ *  min
+ *  max
+ *  fields
+ * nested object
+ * relationship
+ *  one to one
+ *  one to many
+ *  many to many
  */
 
 // TODO improve
