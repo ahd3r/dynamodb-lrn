@@ -116,4 +116,4 @@ resources:
             KeyType: HASH # partition key
           - AttributeName: created # since you can do a lot of filter with this
             KeyType: RANGE # sort key
-        TableName: ${self:service}-customerTestTable2
+        TableName: ${self:service}-customerTestTable3

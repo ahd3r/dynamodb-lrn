@@ -4,7 +4,7 @@ const { logger, ValidationError, ServerError } = require('./utils');
 const { createRideContract, updateRideContract } = require('./validation');
 
 const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10' });
-const tableName = 'ride-service5-customerTestTable2';
+const tableName = 'ride-service5-customerTestTable3';
 const secretToken = 'very-very-secret-token';
 
 /**
