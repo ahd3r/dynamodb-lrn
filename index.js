@@ -72,9 +72,23 @@ const secretToken = 'very-very-secret-token';
  *  one to one
  *  one to many
  *  many to many
+ * advanced filtering
+ *  like
+ *    start with
+ *    end with
+ *    consist
+ *  grater then
+ *  grater or equal then
+ *  less then
+ *  less or equal then
+ *  not equal
+ *  equal
+ *  in
+ *  not in
+ *  and
+ *  or
  */
 
-// TODO improve
 const getMany = async (event, context) => {
   logger.info({
     awsRequestId: context.awsRequestId,
@@ -557,6 +571,50 @@ const deleteMany = async (event, context) => {
   }
 };
 
+const testIndex = async (event, context) => {
+  logger.info({
+    awsRequestId: context.awsRequestId,
+    method: event.requestContext.http.method,
+    queryStringParameters: event.queryStringParameters,
+    pathParameters: event.pathParameters,
+    body: event.body && JSON.parse(event.body),
+    headers: event.headers,
+    path: event.requestContext.http.path
+  });
+
+  try {
+    const data = await client
+      .query({
+        TableName: tableName,
+        KeyConditionExpression: '#passengerAmount = :passengerAmount',
+        ExpressionAttributeValues: {
+          ':passengerAmount': Number(event.queryStringParameters.amount)
+        },
+        ExpressionAttributeNames: {
+          '#passengerAmount': 'passengerAmount'
+        }
+      })
+      .promise();
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
+    }
+    return {
+      statusCode: error.status,
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
+    };
+  }
+};
+
 module.exports = {
   getOne,
   getMany,
@@ -565,5 +623,6 @@ module.exports = {
   updateOne,
   updateMany,
   deleteOne,
-  deleteMany
+  deleteMany,
+  test: testIndex
 };

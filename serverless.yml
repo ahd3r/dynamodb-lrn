@@ -76,6 +76,13 @@ functions:
       - httpApi:
           path: /
           method: delete
+  test:
+    handler: index.test
+    role: lambdaRole3
+    events:
+      - httpApi:
+          path: /test
+          method: post
 
 resources:
   Resources:
