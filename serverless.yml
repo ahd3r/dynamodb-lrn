@@ -1,4 +1,4 @@
-service: ride-service4
+service: ride-service5
 
 frameworkVersion: '3'
 
@@ -69,6 +69,13 @@ functions:
       - httpApi:
           path: /{id}
           method: delete
+  deleteManyRides:
+    handler: index.deleteMany
+    role: lambdaRole2
+    events:
+      - httpApi:
+          path: /
+          method: delete
 
 resources:
   Resources:
@@ -99,14 +106,14 @@ resources:
       Type: AWS::DynamoDB::Table
       Properties:
         AttributeDefinitions:
-          - AttributeName: id
-            AttributeType: S
           - AttributeName: entity
+            AttributeType: S
+          - AttributeName: created
             AttributeType: S
         BillingMode: PAY_PER_REQUEST
         KeySchema:
-          - AttributeName: id
-            KeyType: HASH
           - AttributeName: entity
-            KeyType: RANGE
+            KeyType: HASH # partition key
+          - AttributeName: created # since you can do a lot of filter with this
+            KeyType: RANGE # sort key
         TableName: ${self:service}-customerTestTable2

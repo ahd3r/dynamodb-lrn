@@ -1,28 +1,27 @@
 const { DocumentClient } = require('aws-sdk/clients/dynamodb');
-const { v4: uuid } = require('uuid');
 
 const { logger, ValidationError, ServerError } = require('./utils');
 const { createRideContract, updateRideContract } = require('./validation');
 
 const client = new DocumentClient({ region: 'us-east-1', apiVersion: '2012-08-10' });
-const tableName = 'ride-service4-customerTestTable2';
+const tableName = 'ride-service5-customerTestTable2';
 const secretToken = 'very-very-secret-token';
 
 /**
  * scan - done
  * query - done
  * get - done
- * batchGet - no need
- * batchWrite
- *  create
- *  update
- *  delete
- * update
+ * batchGet - done
+ * batchWrite - done
+ *  create - done
+ *  update - done
+ *  delete - done
+ * update - done
  * put
- *  create
- *  update
- *  add
- * delete
+ *  create - done
+ *  update - done
+ *  add - ?
+ * delete - done
  */
 
 // TODO improve
@@ -46,7 +45,7 @@ const getMany = async (event, context) => {
         ':carMark': event.queryStringParameters?.carMark,
         ':carYear':
           event.queryStringParameters?.carYear && Number(event.queryStringParameters?.carYear),
-        ':id': event.queryStringParameters?.id,
+        ':created': event.queryStringParameters?.id,
         ':passengerAmount':
           event.queryStringParameters?.passengerAmount &&
           Number(event.queryStringParameters?.passengerAmount)
@@ -95,21 +94,21 @@ const getOne = async (event, context) => {
     // const data = await client
     //   .query({
     //     TableName: tableName,
-    //     KeyConditionExpression: '#entity = :entity and #id = :id',
+    //     KeyConditionExpression: '#entity = :entity and #created = :created',
     //     ExpressionAttributeValues: {
     //       ':entity': 'ride',
-    //       ':id': event.pathParameters?.id
+    //       ':created': event.pathParameters?.id
     //     },
     //     ExpressionAttributeNames: {
     //       '#entity': 'entity',
-    //       '#id': 'id'
+    //       '#created': 'created'
     //     }
     //   })
     //   .promise();
     const data = await client.get({
       TableName: tableName,
       Key: {
-        id: event.pathParameters?.id,
+        created: event.pathParameters?.id,
         entity: 'ride'
       }
     });
@@ -154,7 +153,7 @@ const createOne = async (event, context) => {
     }
     const body = JSON.parse(event.body);
     const ride = await createRideContract.validateAsync(body, { abortEarly: false });
-    ride.id = uuid();
+    ride.created = Date.now();
     ride.entity = 'ride';
     await client
       .put({
@@ -203,7 +202,7 @@ const createMany = async (event, context) => {
     let res = [];
     for (const ride of body) {
       const validRide = await createRideContract.validateAsync(ride, { abortEarly: false });
-      validRide.id = uuid();
+      validRide.created = Date.now();
       validRide.entity = 'ride';
       res.push(validRide);
     }
@@ -252,24 +251,34 @@ const updateOne = async (event, context) => {
 
     const body = JSON.parse(event.body);
     const validRideUpdate = await updateRideContract.validateAsync(body, { abortEarly: false });
+    // await client
+    //   .update({
+    //     TableName: tableName,
+    //     Key: {
+    //       created: event.pathParameters?.id,
+    //       entity: 'ride'
+    //     },
+    //     UpdateExpression: `set ${Object.keys(validRideUpdate)
+    //       .map((key) => `#${key} = :${key}`)
+    //       .join(', ')}`,
+    //     ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
+    //       (res, key) => ({ ...res, [`#${key}`]: key }),
+    //       {}
+    //     ),
+    //     ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
+    //       (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
+    //       {}
+    //     )
+    //   })
+    //   .promise();
     await client
-      .update({
+      .put({
         TableName: tableName,
-        Key: {
-          id: event.pathParameters?.id,
-          entity: 'ride'
-        },
-        UpdateExpression: `set ${Object.keys(validRideUpdate)
-          .map((key) => `#${key} = :${key}`)
-          .join(', ')}`,
-        ExpressionAttributeNames: Object.keys(validRideUpdate).reduce(
-          (res, key) => ({ ...res, [`#${key}`]: key }),
-          {}
-        ),
-        ExpressionAttributeValues: Object.entries(validRideUpdate).reduce(
-          (res, [key, val]) => ({ ...res, [`:${key}`]: val }),
-          {}
-        )
+        Item: {
+          ...validRideUpdate,
+          entity: 'ride',
+          created: event.pathParameters?.id
+        }
       })
       .promise();
     const data = await client
@@ -277,7 +286,7 @@ const updateOne = async (event, context) => {
         TableName: tableName,
         Key: {
           entity: 'ride',
-          id: event.pathParameters?.id
+          created: event.pathParameters?.id
         }
       })
       .promise();
@@ -317,18 +326,49 @@ const updateMany = async (event, context) => {
     if (event.headers.authorization !== secretToken) {
       throw new ValidationError('Wrong authorization token');
     }
+    if (!event.queryStringParameters?.ids) {
+      throw new ValidationError('No ids in query');
+    }
+    const ids = event.queryStringParameters.ids.split(',').map((id) => id.trim());
+    if (!ids || !ids.length) {
+      throw new ValidationError('No ids in query');
+    }
+    const itemToUpdate = await client
+      .batchGet({
+        RequestItems: {
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
+        }
+      })
+      .promise();
+    if (ids.length > itemToUpdate.Responses[tableName].length) {
+      const foundIds = itemToUpdate.Responses[tableName].map((item) => item.created);
+      throw new ValidationError(
+        `${ids.filter((id) => !foundIds.includes(id)).join(', ')} does not exist`
+      );
+    }
 
     const body = JSON.parse(event.body);
-    // await client
-    //   .put({
-    //     TableName: tableName,
-    //     Item: body
-    //   })
-    //   .promise();
+    const validRideUpdate = await updateRideContract.validateAsync(body, { abortEarly: false });
+    await client
+      .batchWrite({
+        RequestItems: {
+          [tableName]: ids.map((id) => ({
+            PutRequest: { Item: { ...validRideUpdate, entity: 'ride', created: id } }
+          }))
+        }
+      })
+      .promise();
+    const updatedItems = await client
+      .batchGet({
+        RequestItems: {
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
+        }
+      })
+      .promise();
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data: body })
+      body: JSON.stringify({ data: updatedItems.Responses[tableName] })
     };
   } catch (error) {
     console.error(error);
@@ -366,7 +406,7 @@ const deleteOne = async (event, context) => {
         TableName: tableName,
         Key: {
           entity: 'ride',
-          id: event.pathParameters?.id
+          created: event.pathParameters?.id
         }
       })
       .promise();
@@ -374,7 +414,7 @@ const deleteOne = async (event, context) => {
       .delete({
         TableName: tableName,
         Key: {
-          id: event.pathParameters?.id,
+          created: event.pathParameters?.id,
           entity: 'ride'
         }
       })
@@ -399,6 +439,71 @@ const deleteOne = async (event, context) => {
     };
   }
 };
+const deleteMany = async (event, context) => {
+  logger.info({
+    awsRequestId: context.awsRequestId,
+    method: event.requestContext.http.method,
+    queryStringParameters: event.queryStringParameters,
+    pathParameters: event.pathParameters,
+    body: event.body && JSON.parse(event.body),
+    headers: event.headers,
+    path: event.requestContext.http.path
+  });
+
+  try {
+    if (event.headers.authorization !== secretToken) {
+      throw new ValidationError('Wrong authorization token');
+    }
+    if (!event.queryStringParameters?.ids) {
+      throw new ValidationError('No ids in query');
+    }
+    const ids = event.queryStringParameters.ids.split(',').map((id) => id.trim());
+    if (!ids || !ids.length) {
+      throw new ValidationError('No ids in query');
+    }
+    const itemToDelete = await client
+      .batchGet({
+        RequestItems: {
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
+        }
+      })
+      .promise();
+    if (ids.length > itemToDelete.Responses[tableName].length) {
+      const foundIds = itemToDelete.Responses[tableName].map((item) => item.created);
+      throw new ValidationError(
+        `${ids.filter((id) => !foundIds.includes(id)).join(', ')} does not exist`
+      );
+    }
+
+    await client
+      .batchWrite({
+        RequestItems: {
+          [tableName]: ids.map((id) => ({
+            DeleteRequest: { Key: { entity: 'ride', created: id } }
+          }))
+        }
+      })
+      .promise();
+
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ data: itemToDelete.Responses[tableName] })
+    };
+  } catch (error) {
+    console.error(error);
+    if (!error.status) {
+      if (error.details) {
+        error = new ValidationError(error.details);
+      } else {
+        error = new ServerError(error.message || error);
+      }
+    }
+    return {
+      statusCode: error.status,
+      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
+    };
+  }
+};
 
 module.exports = {
   getOne,
@@ -407,5 +512,6 @@ module.exports = {
   createMany,
   updateOne,
   updateMany,
-  deleteOne
+  deleteOne,
+  deleteMany
 };
