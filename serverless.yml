@@ -147,10 +147,10 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: 'ALL'
-          # - IndexName: PassengerIndex
-          #   KeySchema:
-          #     - AttributeName: passengerAmount
-          #       KeyType: HASH
-          #   Projection:
-          #     ProjectionType: 'ALL'
+          - IndexName: PassengerIndex
+            KeySchema:
+              - AttributeName: passengerAmount
+                KeyType: HASH
+            Projection:
+              ProjectionType: 'ALL'
         TableName: ${self:service}-customerTestTable3
