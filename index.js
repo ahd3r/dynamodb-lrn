@@ -105,13 +105,15 @@ const getOne = async (event, context) => {
     //     }
     //   })
     //   .promise();
-    const data = await client.get({
-      TableName: tableName,
-      Key: {
-        created: Number(event.pathParameters?.id),
-        entity: 'ride'
-      }
-    });
+    const data = await client
+      .get({
+        TableName: tableName,
+        Key: {
+          created: Number(event.pathParameters?.id),
+          entity: 'ride'
+        }
+      })
+      .promise();
 
     return {
       statusCode: 200,
