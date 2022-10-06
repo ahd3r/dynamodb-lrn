@@ -97,7 +97,7 @@ const getOne = async (event, context) => {
     //     KeyConditionExpression: '#entity = :entity and #created = :created',
     //     ExpressionAttributeValues: {
     //       ':entity': 'ride',
-    //       ':created': event.pathParameters?.id
+    //       ':created': Number(event.pathParameters?.id)
     //     },
     //     ExpressionAttributeNames: {
     //       '#entity': 'entity',
@@ -108,7 +108,7 @@ const getOne = async (event, context) => {
     const data = await client.get({
       TableName: tableName,
       Key: {
-        created: event.pathParameters?.id,
+        created: Number(event.pathParameters?.id),
         entity: 'ride'
       }
     });
@@ -255,7 +255,7 @@ const updateOne = async (event, context) => {
     //   .update({
     //     TableName: tableName,
     //     Key: {
-    //       created: event.pathParameters?.id,
+    //       created: Number(event.pathParameters?.id),
     //       entity: 'ride'
     //     },
     //     UpdateExpression: `set ${Object.keys(validRideUpdate)
@@ -277,7 +277,7 @@ const updateOne = async (event, context) => {
         Item: {
           ...validRideUpdate,
           entity: 'ride',
-          created: event.pathParameters?.id
+          created: Number(event.pathParameters?.id)
         }
       })
       .promise();
@@ -286,7 +286,7 @@ const updateOne = async (event, context) => {
         TableName: tableName,
         Key: {
           entity: 'ride',
-          created: event.pathParameters?.id
+          created: Number(event.pathParameters?.id)
         }
       })
       .promise();
@@ -406,7 +406,7 @@ const deleteOne = async (event, context) => {
         TableName: tableName,
         Key: {
           entity: 'ride',
-          created: event.pathParameters?.id
+          created: Number(event.pathParameters?.id)
         }
       })
       .promise();
@@ -414,7 +414,7 @@ const deleteOne = async (event, context) => {
       .delete({
         TableName: tableName,
         Key: {
-          created: event.pathParameters?.id,
+          created: Number(event.pathParameters?.id),
           entity: 'ride'
         }
       })
