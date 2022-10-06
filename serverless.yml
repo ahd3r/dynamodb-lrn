@@ -109,7 +109,7 @@ resources:
           - AttributeName: entity
             AttributeType: S
           - AttributeName: created
-            AttributeType: S
+            AttributeType: N
         BillingMode: PAY_PER_REQUEST
         KeySchema:
           - AttributeName: entity
