@@ -115,7 +115,7 @@ const getOne = async (event, context) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
     console.error(error);
@@ -293,7 +293,7 @@ const updateOne = async (event, context) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
     console.error(error);
@@ -422,7 +422,7 @@ const deleteOne = async (event, context) => {
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ data })
+      body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
     console.error(error);
