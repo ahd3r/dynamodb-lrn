@@ -110,8 +110,8 @@ resources:
             AttributeType: S
           - AttributeName: created
             AttributeType: N
-          # - AttributeName: passengerAmount
-          #   AttributeType: N
+          - AttributeName: passengerAmount
+            AttributeType: N
           - AttributeName: carYear
             AttributeType: N
           - AttributeName: carMark
@@ -139,14 +139,14 @@ resources:
           #       KeyType: RANGE
           #   Projection:
           #     ProjectionType: 'ALL'
-          # - IndexName: PassengerRideIndex
-          #   KeySchema:
-          #     - AttributeName: entity
-          #       KeyType: HASH
-          #     - AttributeName: passengerAmount
-          #       KeyType: RANGE
-          #   Projection:
-          #     ProjectionType: 'ALL'
+          - IndexName: PassengerRideIndex
+            KeySchema:
+              - AttributeName: entity
+                KeyType: HASH
+              - AttributeName: passengerAmount
+                KeyType: RANGE
+            Projection:
+              ProjectionType: 'ALL'
           # - IndexName: PassengerIndex
           #   KeySchema:
           #     - AttributeName: passengerAmount
