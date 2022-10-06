@@ -22,56 +22,56 @@ provider:
 functions:
   getRides:
     handler: index.getMany
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /
           method: get
   getRide:
     handler: index.getOne
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /{id}
           method: get
   createOneRide:
     handler: index.createOne
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /
           method: post
   createManyRides:
     handler: index.createMany
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /many
           method: post
   updateOneRide:
     handler: index.updateOne
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /{id}
           method: patch
   updateManyRides:
     handler: index.updateMany
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /
           method: patch
   deleteOneRide:
     handler: index.deleteOne
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /{id}
           method: delete
   deleteManyRides:
     handler: index.deleteMany
-    role: lambdaRole2
+    role: lambdaRole3
     events:
       - httpApi:
           path: /
@@ -79,11 +79,11 @@ functions:
 
 resources:
   Resources:
-    lambdaRole2:
+    lambdaRole3:
       Type: AWS::IAM::Role
       Properties:
         Path: /
-        RoleName: lambdaRole2
+        RoleName: lambdaRole3
         AssumeRolePolicyDocument:
           Version: '2012-10-17'
           Statement:
