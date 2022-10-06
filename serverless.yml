@@ -112,10 +112,10 @@ resources:
             AttributeType: N
           # - AttributeName: passengerAmount
           #   AttributeType: N
-          # - AttributeName: carYear
-          #   AttributeType: N
-          # - AttributeName: carMark
-          #   AttributeType: S
+          - AttributeName: carYear
+            AttributeType: N
+          - AttributeName: carMark
+            AttributeType: S
         BillingMode: PAY_PER_REQUEST
         KeySchema:
           - AttributeName: entity
