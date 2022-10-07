@@ -414,7 +414,7 @@ const updateMany = async (event, context) => {
     const itemsToUpdate = await client
       .batchGet({
         RequestItems: {
-          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: Number(id) })) }
         }
       })
       .promise();
@@ -441,7 +441,7 @@ const updateMany = async (event, context) => {
     const updatedItems = await client
       .batchGet({
         RequestItems: {
-          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: Number(id) })) }
         }
       })
       .promise();
