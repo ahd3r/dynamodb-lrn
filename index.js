@@ -339,13 +339,22 @@ const updateOne = async (event, context) => {
     //     )
     //   })
     //   .promise();
+    const { Item: entityToUpdate } = await client
+      .get({
+        Key: {
+          entity: 'ride',
+          created: Number(event.pathParameters?.id)
+        }
+      })
+      .promise();
     await client
       .put({
         TableName: tableName,
         Item: {
+          ...entityToUpdate,
           ...validRideUpdate,
           entity: 'ride',
-          created: Number(event.pathParameters?.id)
+          created: entityToUpdate.created
         }
       })
       .promise();
@@ -354,7 +363,7 @@ const updateOne = async (event, context) => {
         TableName: tableName,
         Key: {
           entity: 'ride',
-          created: Number(event.pathParameters?.id)
+          created: entityToUpdate.created
         }
       })
       .promise();
@@ -401,15 +410,15 @@ const updateMany = async (event, context) => {
     if (!ids || !ids.length) {
       throw new ValidationError('No ids in query');
     }
-    const itemToUpdate = await client
+    const itemsToUpdate = await client
       .batchGet({
         RequestItems: {
           [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
         }
       })
       .promise();
-    if (ids.length > itemToUpdate.Responses[tableName].length) {
-      const foundIds = itemToUpdate.Responses[tableName].map((item) => item.created);
+    if (ids.length > itemsToUpdate.Responses[tableName].length) {
+      const foundIds = itemsToUpdate.Responses[tableName].map((item) => item.created);
       throw new ValidationError(
         `${ids.filter((id) => !foundIds.includes(id)).join(', ')} does not exist`
       );
@@ -420,8 +429,10 @@ const updateMany = async (event, context) => {
     await client
       .batchWrite({
         RequestItems: {
-          [tableName]: ids.map((id) => ({
-            PutRequest: { Item: { ...validRideUpdate, entity: 'ride', created: id } }
+          [tableName]: itemsToUpdate.map((item) => ({
+            PutRequest: {
+              Item: { ...item, ...validRideUpdate, entity: 'ride', created: item.created }
+            }
           }))
         }
       })
