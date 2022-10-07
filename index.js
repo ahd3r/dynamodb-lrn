@@ -341,6 +341,7 @@ const updateOne = async (event, context) => {
     //   .promise();
     const { Item: entityToUpdate } = await client
       .get({
+        TableName: tableName,
         Key: {
           entity: 'ride',
           created: Number(event.pathParameters?.id)
