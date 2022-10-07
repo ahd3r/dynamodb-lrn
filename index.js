@@ -432,7 +432,7 @@ const updateMany = async (event, context) => {
     await client
       .batchWrite({
         RequestItems: {
-          [tableName]: itemsToUpdate.map((item) => ({
+          [tableName]: itemsToUpdate.Responses[tableName].map((item) => ({
             PutRequest: {
               Item: { ...item, ...validRideUpdate, entity: 'ride', created: item.created }
             }
