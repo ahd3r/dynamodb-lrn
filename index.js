@@ -72,6 +72,7 @@ const secretToken = 'very-very-secret-token';
  *  one to one
  *  one to many
  *  many to many
+ * pagination
  * advanced filtering
  *  like
  *    start with
@@ -418,8 +419,6 @@ const updateMany = async (event, context) => {
         }
       })
       .promise();
-    console.log(ids);
-    console.log(itemsToUpdate.Responses);
     if (ids.length > itemsToUpdate.Responses[tableName].length) {
       const foundIds = itemsToUpdate.Responses[tableName].map((item) => item.created);
       throw new ValidationError(
@@ -539,7 +538,7 @@ const deleteMany = async (event, context) => {
     if (!event.queryStringParameters?.ids) {
       throw new ValidationError('No ids in query');
     }
-    const ids = event.queryStringParameters.ids.split(',').map((id) => id.trim());
+    const ids = event.queryStringParameters.ids.split(',').map((id) => Number(id.trim()));
     if (!ids || !ids.length) {
       throw new ValidationError('No ids in query');
     }
