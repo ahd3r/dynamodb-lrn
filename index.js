@@ -601,12 +601,14 @@ const testIndex = async (event, context) => {
     const data = await client
       .query({
         TableName: tableName,
-        KeyConditionExpression: '#passengerAmount = :passengerAmount',
+        KeyConditionExpression: '#passengerAmount = :passengerAmount and #entity = :entity',
         ExpressionAttributeValues: {
-          ':passengerAmount': Number(event.queryStringParameters.amount)
+          ':passengerAmount': Number(event.queryStringParameters.amount),
+          ':entity': 'ride'
         },
         ExpressionAttributeNames: {
-          '#passengerAmount': 'passengerAmount'
+          '#passengerAmount': 'passengerAmount',
+          '#entity': 'entity'
         }
       })
       .promise();
