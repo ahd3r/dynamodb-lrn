@@ -418,6 +418,8 @@ const updateMany = async (event, context) => {
         }
       })
       .promise();
+    console.log(ids);
+    console.log(itemsToUpdate.Responses);
     if (ids.length > itemsToUpdate.Responses[tableName].length) {
       const foundIds = itemsToUpdate.Responses[tableName].map((item) => item.created);
       throw new ValidationError(
