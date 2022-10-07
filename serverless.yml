@@ -138,22 +138,22 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: 'ALL'
-          - IndexName: CarMarkIndex
-            KeySchema:
-              - AttributeName: carMark
-                KeyType: HASH
-              - AttributeName: created
-                KeyType: RANGE
-            Projection:
-              ProjectionType: 'ALL'
-          - IndexName: PassengerRideIndex
-            KeySchema:
-              - AttributeName: entity
-                KeyType: HASH
-              - AttributeName: passengerAmount
-                KeyType: RANGE
-            Projection:
-              ProjectionType: 'ALL'
+          # - IndexName: CarMarkIndex
+          #   KeySchema:
+          #     - AttributeName: carMark
+          #       KeyType: HASH
+          #     - AttributeName: created
+          #       KeyType: RANGE
+          #   Projection:
+          #     ProjectionType: 'ALL'
+          # - IndexName: PassengerRideIndex
+          #   KeySchema:
+          #     - AttributeName: entity
+          #       KeyType: HASH
+          #     - AttributeName: passengerAmount
+          #       KeyType: RANGE
+          #   Projection:
+          #     ProjectionType: 'ALL'
           - IndexName: PassengerIndex
             KeySchema:
               - AttributeName: passengerAmount
