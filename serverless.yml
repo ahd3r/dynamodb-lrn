@@ -160,4 +160,4 @@ resources:
                 KeyType: HASH
             Projection:
               ProjectionType: 'ALL'
-        TableName: ${self:service}-customerTestTable3
+        TableName: ${self:service}-customerTestTable4
