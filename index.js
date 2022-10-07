@@ -407,14 +407,14 @@ const updateMany = async (event, context) => {
     if (!event.queryStringParameters?.ids) {
       throw new ValidationError('No ids in query');
     }
-    const ids = event.queryStringParameters.ids.split(',').map((id) => id.trim());
+    const ids = event.queryStringParameters.ids.split(',').map((id) => Number(id.trim()));
     if (!ids || !ids.length) {
       throw new ValidationError('No ids in query');
     }
     const itemsToUpdate = await client
       .batchGet({
         RequestItems: {
-          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: Number(id) })) }
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
         }
       })
       .promise();
@@ -443,7 +443,7 @@ const updateMany = async (event, context) => {
     const updatedItems = await client
       .batchGet({
         RequestItems: {
-          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: Number(id) })) }
+          [tableName]: { Keys: ids.map((id) => ({ entity: 'ride', created: id })) }
         }
       })
       .promise();
