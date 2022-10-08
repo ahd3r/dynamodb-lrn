@@ -654,7 +654,7 @@ const testIndex = async (event, context) => {
     } else {
       return {
         statusCode: 200,
-        body: { one: 1 }
+        body: JSON.stringify({ one: 1 })
       };
     }
   } catch (error) {
