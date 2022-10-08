@@ -650,6 +650,7 @@ const testIndex = async (event, context) => {
       const data = await client
         .query({
           TableName: tableName,
+          IndexName: 'CarIndex',
           KeyConditionExpression: '#carMark = :carMark and #carYear = :carYear',
           ExpressionAttributeValues: {
             ':carMark': event.queryStringParameters.carMark,
@@ -672,6 +673,7 @@ const testIndex = async (event, context) => {
       const data = await client
         .query({
           TableName: tableName,
+          IndexName: 'CarIndex',
           KeyConditionExpression: '#carMark = :carMark',
           ExpressionAttributeValues: {
             ':carMark': event.queryStringParameters.carMark
@@ -692,6 +694,7 @@ const testIndex = async (event, context) => {
       const data = await client
         .query({
           TableName: tableName,
+          IndexName: 'CarIndex',
           KeyConditionExpression: '#carYear = :carYear',
           ExpressionAttributeValues: {
             ':carYear': Number(event.queryStringParameters.carYear)
@@ -711,9 +714,6 @@ const testIndex = async (event, context) => {
     } else {
       return {
         statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        },
         headers: {
           'Content-Type': 'application/json'
         },
