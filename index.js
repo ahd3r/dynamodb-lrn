@@ -598,24 +598,65 @@ const testIndex = async (event, context) => {
   });
 
   try {
-    const data = await client
-      .query({
-        TableName: tableName,
-        KeyConditionExpression: '#passengerAmount = :passengerAmount and #entity = :entity',
-        ExpressionAttributeValues: {
-          ':passengerAmount': Number(event.queryStringParameters.amount),
-          ':entity': 'ride'
-        },
-        ExpressionAttributeNames: {
-          '#passengerAmount': 'passengerAmount',
-          '#entity': 'entity'
-        }
-      })
-      .promise();
-    return {
-      statusCode: 200,
-      body: JSON.stringify({ data })
-    };
+    if (event.queryStringParameters.carMark && event.queryStringParameters.carYear) {
+      const data = await client
+        .query({
+          TableName: tableName,
+          KeyConditionExpression: '#carMark = :carMark and #carYear = :carYear',
+          ExpressionAttributeValues: {
+            ':carMark': event.queryStringParameters.carMark,
+            ':carYear': Number(event.queryStringParameters.carYear)
+          },
+          ExpressionAttributeNames: {
+            '#carMark': 'carMark',
+            '#carYear': 'carYear'
+          }
+        })
+        .promise();
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ data })
+      };
+    } else if (event.queryStringParameters.carMark) {
+      const data = await client
+        .query({
+          TableName: tableName,
+          KeyConditionExpression: '#carMark = :carMark',
+          ExpressionAttributeValues: {
+            ':carMark': event.queryStringParameters.carMark
+          },
+          ExpressionAttributeNames: {
+            '#carMark': 'carMark'
+          }
+        })
+        .promise();
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ data })
+      };
+    } else if (event.queryStringParameters.carYear) {
+      const data = await client
+        .query({
+          TableName: tableName,
+          KeyConditionExpression: '#carYear = :carYear',
+          ExpressionAttributeValues: {
+            ':carYear': Number(event.queryStringParameters.carYear)
+          },
+          ExpressionAttributeNames: {
+            '#carYear': 'carYear'
+          }
+        })
+        .promise();
+      return {
+        statusCode: 200,
+        body: JSON.stringify({ data })
+      };
+    } else {
+      return {
+        statusCode: 200,
+        body: { one: 1 }
+      };
+    }
   } catch (error) {
     console.error(error);
     if (!error.status) {
