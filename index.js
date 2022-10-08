@@ -128,6 +128,9 @@ const getMany = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data })
     };
   } catch (error) {
@@ -141,6 +144,9 @@ const getMany = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -182,6 +188,9 @@ const getOne = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
@@ -195,6 +204,9 @@ const getOne = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -231,6 +243,9 @@ const createOne = async (event, context) => {
       .promise();
     return {
       statusCode: 201,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: ride })
     };
   } catch (error) {
@@ -244,6 +259,9 @@ const createOne = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -284,6 +302,9 @@ const createMany = async (event, context) => {
       .promise();
     return {
       statusCode: 201,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: res })
     };
   } catch (error) {
@@ -297,6 +318,9 @@ const createMany = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -372,6 +396,9 @@ const updateOne = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
@@ -385,6 +412,9 @@ const updateOne = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -449,6 +479,9 @@ const updateMany = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: updatedItems.Responses[tableName] })
     };
   } catch (error) {
@@ -462,6 +495,9 @@ const updateMany = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -503,6 +539,9 @@ const deleteOne = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: data.Item })
     };
   } catch (error) {
@@ -516,6 +555,9 @@ const deleteOne = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -568,6 +610,9 @@ const deleteMany = async (event, context) => {
 
     return {
       statusCode: 200,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ data: itemToDelete.Responses[tableName] })
     };
   } catch (error) {
@@ -581,6 +626,9 @@ const deleteMany = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
@@ -615,6 +663,9 @@ const testIndex = async (event, context) => {
         .promise();
       return {
         statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ data })
       };
     } else if (event.queryStringParameters.carMark) {
@@ -632,6 +683,9 @@ const testIndex = async (event, context) => {
         .promise();
       return {
         statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ data })
       };
     } else if (event.queryStringParameters.carYear) {
@@ -649,11 +703,17 @@ const testIndex = async (event, context) => {
         .promise();
       return {
         statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        },
         body: JSON.stringify({ data })
       };
     } else {
       return {
         statusCode: 200,
+        headers: {
+          'Content-Type': 'application/json'
+        },
         headers: {
           'Content-Type': 'application/json'
         },
@@ -671,6 +731,9 @@ const testIndex = async (event, context) => {
     }
     return {
       statusCode: error.status,
+      headers: {
+        'Content-Type': 'application/json'
+      },
       body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
     };
   }
