@@ -9,15 +9,25 @@ const secretToken = 'very-very-secret-token';
 
 /**
  * query
- * - this method has access to dynamodb functionality to work with indexes, like partition key and sort key, that's why it requires two type of filtering: by the index attribute and ordinary attribute.
+ * - this method has access to dynamodb functionality to work with indexes, like primary index (partition key and sort key), GSI (partition key or sort key or both), LSI (partition key (from primary index) or sort key or both).
  * - this method accept next fields:
- * - - KeyConditionExpression - filters by the index attribute
+ * - - KeyConditionExpression - filters by the index attribute (if IndexName does not specified, then filtering happens by Primary index, which is unique for each record)
  * - - ExpressionAttributeValues - object with key-value pair, which will replace a piece of expression in KeyConditionExpression and FilterExpression, which is responsible for value filter (key name starts with colon (:))
+ * - - IndexName (optional) - 
  * - - FilterExpression (optional) - almost the same as KeyConditionExpression, but for non index attribute
  * - - ExpressionAttributeNames (optional) - object with key-value pair, which will replace a piece of expression in KeyConditionExpression and FilterExpression, which is responsible for name of attribute (key name starts with grid (#))
  * - - ProjectionExpression (optional) - you may define a set of attributes you want to get from query execution
+ * - Indexes
+ * - - Primary Index - each table has it and it is unique for each record
+ * - - - It is a Partition Key or combination of Partition Key and Sort Key
+ * - - - It is better to use a combination, since DynamoDB good work with one table pattern
+ * - - Global Secondary Index (GSI) - perform a copy of a whole DB, under the hood, but with different Partition Key and Sort Key, that's why use it smart without overhead.
+ * - - - Might be a Partition Key or combination of Partition Key and Sort Key
+ * - - - May not be unique for each record
+ * - - Local Secondary Index (LSI) - change Sort Key for Partition Key in Primary Index, which perform increases of finding record in Partition Key
  * - example of params:
  * - - {
+        IndexName: 'EmailIndex',
         TableName: "tblUsers",
         ExpressionAttributeNames: {
           "#password": "password",
