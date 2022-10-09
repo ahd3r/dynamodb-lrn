@@ -25,8 +25,10 @@ const secretToken = 'very-very-secret-token';
  * - - - Might be a Partition Key or combination of Partition Key and Sort Key
  * - - - May not be unique for each record
  * - - - Can create on an existing table
+ * - - - Up to 20 per table
  * - - Local Secondary Index (LSI) - change Sort Key for Partition Key in Primary Index, which perform increases of finding record in Partition Key
  * - - - Can not create on an existing table
+ * - - - Up to 5 per table
  * - example of params:
  * - - {
         IndexName: 'EmailIndex',
