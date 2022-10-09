@@ -24,7 +24,9 @@ const secretToken = 'very-very-secret-token';
  * - - Global Secondary Index (GSI) - perform a copy of a whole DB, under the hood, but with different Partition Key and Sort Key, that's why use it smart without overhead.
  * - - - Might be a Partition Key or combination of Partition Key and Sort Key
  * - - - May not be unique for each record
+ * - - - Can create on an existing table
  * - - Local Secondary Index (LSI) - change Sort Key for Partition Key in Primary Index, which perform increases of finding record in Partition Key
+ * - - - Can not create on an existing table
  * - example of params:
  * - - {
         IndexName: 'EmailIndex',
