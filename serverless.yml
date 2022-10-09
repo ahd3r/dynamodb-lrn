@@ -76,13 +76,6 @@ functions:
       - httpApi:
           path: /
           method: delete
-  test:
-    handler: index.test
-    role: lambdaRole3
-    events:
-      - httpApi:
-          path: /test
-          method: post
 
 resources:
   Resources:
@@ -125,7 +118,7 @@ resources:
             AttributeType: S
         BillingMode: PAY_PER_REQUEST
         KeySchema:
-          - AttributeName: entity
+          - AttributeName: entity # you can not do advanced filter with it
             KeyType: HASH # partition key
           - AttributeName: created # since you can do a lot of filter with this
             KeyType: RANGE # sort key
@@ -138,22 +131,6 @@ resources:
                 KeyType: RANGE
             Projection:
               ProjectionType: 'ALL'
-          # - IndexName: CarMarkIndex
-          #   KeySchema:
-          #     - AttributeName: carMark
-          #       KeyType: HASH
-          #     - AttributeName: created
-          #       KeyType: RANGE
-          #   Projection:
-          #     ProjectionType: 'ALL'
-          # - IndexName: PassengerRideIndex
-          #   KeySchema:
-          #     - AttributeName: entity
-          #       KeyType: HASH
-          #     - AttributeName: passengerAmount
-          #       KeyType: RANGE
-          #   Projection:
-          #     ProjectionType: 'ALL'
           - IndexName: PassengerIndex
             KeySchema:
               - AttributeName: passengerAmount

@@ -35,10 +35,9 @@ const secretToken = 'very-very-secret-token';
  * - - https://docs.aws.amazon.com/sdk-for-javascript/v2/developer-guide/dynamodb-example-query-scan.html
  * - - https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/Query.html
  * scan
- * - it goes through every record in table and check the condition, 'query' method is similar a little bit, but more optimized
+ * - it goes through every record in table and check the condition, 'query' method is similar a little bit, but work in more optimized way with indexes
  */
 
-// TODO
 /**
  * scan - done
  * query - done
@@ -49,45 +48,10 @@ const secretToken = 'very-very-secret-token';
  *  update - done
  *  delete - done
  * update - done
- * put
+ * put - done
  *  create - done
  *  update - done
- *  add - ?
- * delete - done
- */
-/**
- * indexes
- *  global secondary index
- *  local secondary index
- * analytics
- *  group
- *  count
- *  sum
- *  avg
- *  min
- *  max
- *  fields
- * nested object
- * relationship
- *  one to one
- *  one to many
- *  many to many
- * pagination
- * advanced filtering
- *  like
- *    start with
- *    end with
- *    consist
- *  grater then
- *  grater or equal then
- *  less then
- *  less or equal then
- *  not equal
- *  equal
- *  in
- *  not in
- *  and
- *  or
+ *  delete - done
  */
 
 const getMany = async (event, context) => {
@@ -634,111 +598,6 @@ const deleteMany = async (event, context) => {
   }
 };
 
-const testIndex = async (event, context) => {
-  logger.info({
-    awsRequestId: context.awsRequestId,
-    method: event.requestContext.http.method,
-    queryStringParameters: event.queryStringParameters,
-    pathParameters: event.pathParameters,
-    body: event.body && JSON.parse(event.body),
-    headers: event.headers,
-    path: event.requestContext.http.path
-  });
-
-  try {
-    if (event.queryStringParameters.carMark && event.queryStringParameters.carYear) {
-      const data = await client
-        .query({
-          TableName: tableName,
-          IndexName: 'CarIndex',
-          KeyConditionExpression: '#carMark = :carMark and #carYear = :carYear',
-          ExpressionAttributeValues: {
-            ':carMark': event.queryStringParameters.carMark,
-            ':carYear': Number(event.queryStringParameters.carYear)
-          },
-          ExpressionAttributeNames: {
-            '#carMark': 'carMark',
-            '#carYear': 'carYear'
-          }
-        })
-        .promise();
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ data })
-      };
-    } else if (event.queryStringParameters.carMark) {
-      const data = await client
-        .query({
-          TableName: tableName,
-          IndexName: 'CarIndex',
-          KeyConditionExpression: '#carMark = :carMark',
-          ExpressionAttributeValues: {
-            ':carMark': event.queryStringParameters.carMark
-          },
-          ExpressionAttributeNames: {
-            '#carMark': 'carMark'
-          }
-        })
-        .promise();
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ data })
-      };
-    } else if (event.queryStringParameters.carYear) {
-      const data = await client
-        .query({
-          TableName: tableName,
-          IndexName: 'CarIndex',
-          KeyConditionExpression: '#carYear = :carYear',
-          ExpressionAttributeValues: {
-            ':carYear': Number(event.queryStringParameters.carYear)
-          },
-          ExpressionAttributeNames: {
-            '#carYear': 'carYear'
-          }
-        })
-        .promise();
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ data })
-      };
-    } else {
-      return {
-        statusCode: 200,
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ one: 1 })
-      };
-    }
-  } catch (error) {
-    console.error(error);
-    if (!error.status) {
-      if (error.details) {
-        error = new ValidationError(error.details);
-      } else {
-        error = new ServerError(error.message || error);
-      }
-    }
-    return {
-      statusCode: error.status,
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ error: error.message, type: error.type, errors: error.errors })
-    };
-  }
-};
-
 module.exports = {
   getOne,
   getMany,
@@ -747,6 +606,5 @@ module.exports = {
   updateOne,
   updateMany,
   deleteOne,
-  deleteMany,
-  test: testIndex
+  deleteMany
 };
